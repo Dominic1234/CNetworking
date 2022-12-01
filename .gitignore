@@ -1,3 +1,7 @@
+# project binaries
+client
+server
+
 # Prerequisites
 *.d
 
