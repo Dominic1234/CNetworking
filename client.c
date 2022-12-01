@@ -11,7 +11,7 @@
 #define PORTNUM 2300
 
 int main(int argc, char *argv[]) {
-	char buffer[MAXRCLEN + 1];
+	char buffer[MAXRCVLEN + 1];
 	int len, mysocket;
 	struct sockaddr_in dest;
 
