@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in serv;			/* socket info about server */
 	int mysocket;					/* socket used to listen for incoming connections */
 	socklen_t socksize = sizeof(struct sockaddr_in);
+	pid_t childpid;
 
 	memset(&serv, 0, sizeof(serv));			/* empty struct before filling fields */
 	serv.sin_family = AF_INET;			/* set connection type to TCP/IP */
@@ -53,9 +54,10 @@ int main(int argc, char *argv[]) {
 	while(consocket) {
 		printf("Incoming connection from %s - sending welcome\n", inet_ntoa(dest.sin_addr));
 		send(consocket, msg, strlen(msg), 0);
-		close(consocket);
 		consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
 	}
+
+	close(consocket);
 	close(mysocket);
 	return EXIT_SUCCESS;
 }
