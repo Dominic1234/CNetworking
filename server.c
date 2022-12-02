@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
 	int consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
 
-	if(consocket < ) {
+	if(consocket < 0) {
 		exit(1);
 	}
 

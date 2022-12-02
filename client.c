@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 	dest.sin_addr.s_addr = htonl(INADDR_LOOPBACK);	/* set destination IP number - localhost, 127.0.0.1 */
 	dest.sin_port = htons(PORTNUM);			/* set destination port number */
 
-	res = connect(mysocket, (struct sockaddr *)&dest, sizeof(struct sockaddr_in));
+	int ret = connect(mysocket, (struct sockaddr *)&dest, sizeof(struct sockaddr_in));
 
 	if(ret < 0) {
 		printf("Error in connection\n");
