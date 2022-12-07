@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 
 	pthread_t tid[60];
 
-	int consocket;
+	int consocket, i;
 
 	while(1) {
 		addr_size = sizeof(serverStorage);
@@ -83,6 +83,8 @@ int main(int argc, char *argv[]) {
 			printf("Error\n");
 			exit(1);
 		}
+		if(pthread_create(&threads[i++], NULL, writer, &newSocket) != 0)
+			printf("Failed to create thread\n");
 	}
 
 	close(mysocket);
