@@ -17,18 +17,22 @@ pthread_t tid;
 pthread_t threads[100];
 int count = 0;
 
+// Global variables
+char* msg = "Hello, World\n";
+
 void* writer(void* param) {
 	printf("Writer entering\n");
 	// Lock semaphore
 	sem_wait(&y);
 	printf("Writer entered\n");
+	//send greeting
+	send(*(int*)param, msg, sizeof(msg), 0);
 	// Unlock semaphore
 	sem_post(&y);
 	printf("Writer leaving\n");
 }
 
 int main(int argc, char *argv[]) {
-	char* msg = "Hello, World\n";
 
 	struct sockaddr_in dest;			/* socket info about client */
 	struct sockaddr_in serv;			/* socket info about server */
