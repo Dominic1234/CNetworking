@@ -82,12 +82,12 @@ int main(int argc, char *argv[]) {
 
 	while(1) {
 		addr_size = sizeof(serverStorage);
-		consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
+		consocket = accept(mysocket, (struct sockaddr *)&dest, &addr_size);
 		if(consocket < 0) {
 			printf("Error\n");
 			exit(1);
 		}
-		if(pthread_create(&threads[i++], NULL, writer, &newSocket) != 0)
+		if(pthread_create(&threads[i++], NULL, writer, &consocket) != 0)
 			printf("Failed to create thread\n");
 	}
 
