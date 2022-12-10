@@ -26,7 +26,7 @@ void* writer(void* param) {
 	sem_wait(&y);
 	printf("Writer entered\n");
 	//send greeting
-	send(*(int*)param, msg, sizeof(msg), 0);
+	send(*(int*)param, msg, strlen(msg)+1, 0);
 	// Unlock semaphore
 	sem_post(&y);
 	printf("Writer leaving\n");
