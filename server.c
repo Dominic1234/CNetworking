@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 
 	pthread_t tid[60];
 
-	int consocket, i;
+	int consocket, i = 0;
 
 	while(1) {
 		addr_size = sizeof(serverStorage);
