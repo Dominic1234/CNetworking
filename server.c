@@ -30,6 +30,8 @@ void* writer(void* param) {
 	// Unlock semaphore
 	sem_post(&y);
 	printf("Writer leaving\n");
+
+	return NULL;
 }
 
 int main(int argc, char *argv[]) {
@@ -43,8 +45,7 @@ int main(int argc, char *argv[]) {
 	sem_init(&y, 0, 1);
 
 	int mysocket;					/* socket used to listen for incoming connections */
-	pid_t childpid;
-
+	
 	memset(&serv, 0, sizeof(serv));			/* empty struct before filling fields */
 	serv.sin_family = AF_INET;			/* set connection type to TCP/IP */
 	serv.sin_addr.s_addr = htonl(INADDR_ANY);	/* set server address to any interface */
@@ -76,9 +77,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	pthread_t tid[60];
-
-	int consocket, i = 0;
+		int consocket, i = 0;
 
 	while(1) {
 		addr_size = sizeof(serverStorage);
