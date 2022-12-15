@@ -11,9 +11,12 @@
 #define PORTNUM 2300
 
 int main(int argc, char *argv[]) {
+
 	char buffer[MAXRCVLEN + 1];
-	int len, mysocket;
+	int len, mysocket, choice;
 	struct sockaddr_in dest;
+	
+	choice = 1;
 
 	mysocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -42,6 +45,41 @@ int main(int argc, char *argv[]) {
 	buffer[len] = '\0';
 
 	printf("Received %s (%d bytes). \n", buffer, len);
+
+	while (choice != 3) {
+		printf("1. Write\n");
+		printf("2. Read\n");
+		printf("3. Exit\n");
+		printf("(Default = 1)> ");
+
+		scanf("%d", &choice);
+
+		send(*(int*)dest, choice, 1, 0);
+
+		if(choice == 1) {
+			len = recv(mysocket, buffer, MAXRCVLEN, 0);
+
+			buffer[len] = '\0';
+			
+			printf("Received %s (%d bytes). \n\n", buffer, len);
+
+		}
+		else if(choice == 2) {
+			printf("Enter term of max size "MAXRCVLEN":");
+			scanf("%s", &buffer);
+			printf("Received string: %s", buffer);
+			send(*(int*)dest, buffer, strlen(buffer+1), 0);
+			printf("Message sent\n\n");
+
+		}
+		else if(choice  == 3) {
+			continue;
+		}
+		else {
+			printf("Invalid option, choose again.\n");
+		}
+	}
+
 
 	close(mysocket);
 
