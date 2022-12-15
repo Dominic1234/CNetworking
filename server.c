@@ -27,6 +27,12 @@ void* writer(void* param) {
 	printf("Writer entered\n");
 	//send greeting
 	send(*(int*)param, msg, strlen(msg)+1, 0);
+
+	//begin main code after inital handshake completed
+	int choice = 3, len;
+	while(choice != 3) {
+		len = recv();
+	}
 	// Unlock semaphore
 	sem_post(&y);
 	printf("Writer leaving\n");
