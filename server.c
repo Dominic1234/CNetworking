@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#define MAXRCVLEN 500
 #define PORTNUM 2300
 
 // Semaphore variables
@@ -20,18 +21,40 @@ int count = 0;
 // Global variables
 char* msg = "Hello, World\n";
 
-void* writer(void* param) {
+typedef struct threadArgs {
+	int* sock;
+	void* size;	
+} arg;
+
+void* thread(arg* attr) {
+	char * msg[MAXRCVLEN+1] = "\0";
 	printf("Writer entering\n");
 	// Lock semaphore
 	sem_wait(&y);
 	printf("Writer entered\n");
 	//send greeting
-	send(*(int*)param, msg, strlen(msg)+1, 0);
+	send(*(int*)attr->size, msg, strlen(msg)+1, 0);
 
 	//begin main code after inital handshake completed
 	int choice = 3, len;
+	int* newchoice;
 	while(choice != 3) {
-		len = recv();
+		len = recv(attr->sock, &newchoice, 1, 0);
+		choice = *newchoice;
+
+		if(choice == 1) {
+			send(*(int*)attr->size, msg, strlen(msg)+1, 0);
+		}
+		else if(choice == 2) {
+			len = recv(attr->sock, &msg, MAXRCVLEN, 0);
+			printf("Message received: \"%s\" of size %d\n", msg, len);
+		}
+		else if(choice == 3) {
+			continue;
+		}
+		else {
+			printf("Error, invalid choice\n");
+		}
 	}
 	// Unlock semaphore
 	sem_post(&y);
@@ -92,7 +115,7 @@ int main(int argc, char *argv[]) {
 			printf("Error\n");
 			exit(1);
 		}
-		if(pthread_create(&threads[i++], NULL, writer, &consocket) != 0)
+		if(pthread_create(&threads[i++], NULL, thread, arg attr{&mysocket, &consocket}) != 0)
 			printf("Failed to create thread\n");
 	}
 
