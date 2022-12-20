@@ -12,7 +12,5 @@ line 45 - to have the same meaning, use an enum instead of 1/2/3 and define in a
 line 30 - msg redefines global msg
 line 56 - when this happens, also print the invalid value received as a decimal to help with debugging.
 line 60 - not a good idea to have blocking calls like recv inside a semaphore. For such an operation, a semaphore is not required. If the entire loop is in a semaphore, parallelism with threads is defeated.
-line 86 - During error in system calls, better to print errno or perror()
-line 101 - 50 is 50 pending connections
 line 112 - what is  this serverStorage
 line 118 - what is arg doing in this line?

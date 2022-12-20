@@ -22,12 +22,12 @@ int count = 0;
 char* msg = "Hello, World\n";
 
 typedef struct threadArgs {
-	int* sock;
+	int sock;
 	void* size;	
 } arg;
 
 void* thread(arg* attr) {
-	char * msg[MAXRCVLEN+1] = "\0";
+	char msg[MAXRCVLEN+1] = "\0";
 	printf("Writer entering\n");
 	// Lock semaphore
 	sem_wait(&y);
@@ -53,7 +53,7 @@ void* thread(arg* attr) {
 			continue;
 		}
 		else {
-			printf("Error, invalid choice\n");
+			perror("Error, invalid choice\n");
 		}
 	}
 	// Unlock semaphore
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 	mysocket = socket(AF_INET, SOCK_STREAM, 0);
 
 	if(mysocket < 0) {
-		printf("Error in connection\n");
+		perror("Error in connection\n");
 		exit(1);
 	}
 
@@ -93,16 +93,16 @@ int main(int argc, char *argv[]) {
 	int ret = bind(mysocket, (struct sockaddr *)&serv, sizeof(struct sockaddr));
 
 	if(ret < 0) {
-		printf("Ërror in binding\n");
+		perror("Ërror in binding\n");
 		exit(1);
 	}
 
-	/* start listening, allowing a queue of 1 pending connection */
-	if(listen(mysocket, 50) == 0) {
+	/* start listening, allowing a queue of 10 pending connection */
+	if(listen(mysocket, 10) == 0) {
 		printf("Listening...\n\n");
 	}
 	else {
-		printf("Error\n");
+		perror("Error\n");
 		exit(1);
 	}
 
@@ -112,11 +112,11 @@ int main(int argc, char *argv[]) {
 		addr_size = sizeof(serverStorage);
 		consocket = accept(mysocket, (struct sockaddr *)&dest, &addr_size);
 		if(consocket < 0) {
-			printf("Error\n");
+			perror("Error\n");
 			exit(1);
 		}
-		if(pthread_create(&threads[i++], NULL, thread, arg attr{&mysocket, &consocket}) != 0)
-			printf("Failed to create thread\n");
+		if(pthread_create(&threads[i++], NULL, thread, arg{&mysocket, &consocket}) != 0)
+			perror("Failed to create thread\n");
 	}
 
 	close(mysocket);
