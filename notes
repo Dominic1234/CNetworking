@@ -1,16 +1,10 @@
 Date: 17/Dec
 File server.c - d0dbf2fae8ad27fb2d079be8f25783b3459ef77f
-line 30 - check
 line 24 - passing pointer args to a thread - be sure what you want. Pass by value is better. Also, an fd is type int.
-line 29 - attr is not clear. args is a more common term used.
 line 33 - semaphore is not required if different threads will write to their own sockets. When they share the same socket, thrn it's good to have.
 line 36 - size?
-line 42 - 1 is not the size of an int
-line 41 - but choice is init to 3 !
-line 40 declares a pointer. line 42 requires a buffer.
+line 41 - but choice is init to 3 !	--> on purpose till im confident on this part of the code
 line 45 - to have the same meaning, use an enum instead of 1/2/3 and define in a shared header file between server and client
-line 30 - msg redefines global msg
-line 56 - when this happens, also print the invalid value received as a decimal to help with debugging.
 line 60 - not a good idea to have blocking calls like recv inside a semaphore. For such an operation, a semaphore is not required. If the entire loop is in a semaphore, parallelism with threads is defeated.
 line 112 - what is  this serverStorage
 line 118 - what is arg doing in this line?

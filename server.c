@@ -19,28 +19,27 @@ pthread_t threads[100];
 int count = 0;
 
 // Global variables
-char* msg = "Hello, World\n";
+char* welcome = "Hello, World\n";
 
 typedef struct threadArgs {
 	int sock;
 	void* size;	
 } arg;
 
-void* thread(arg* attr) {
+void* thread(arg* args) {
 	char msg[MAXRCVLEN+1] = "\0";
 	printf("Writer entering\n");
 	// Lock semaphore
 	sem_wait(&y);
 	printf("Writer entered\n");
 	//send greeting
-	send(*(int*)attr->size, msg, strlen(msg)+1, 0);
+	send(*(int*)args->size, welcome, strlen(msg)+1, 0);
 
 	//begin main code after inital handshake completed
 	int choice = 3, len;
-	int* newchoice;
 	while(choice != 3) {
-		len = recv(attr->sock, &newchoice, 1, 0);
-		choice = *newchoice;
+		len = recv(args->sock, &msg, sizeof(int), 0);
+		choice = atoi(msg);
 
 		if(choice == 1) {
 			send(*(int*)attr->size, msg, strlen(msg)+1, 0);
@@ -53,7 +52,7 @@ void* thread(arg* attr) {
 			continue;
 		}
 		else {
-			perror("Error, invalid choice\n");
+			perror("Error, invalid choice: %d\n", choice);
 		}
 	}
 	// Unlock semaphore
@@ -115,7 +114,7 @@ int main(int argc, char *argv[]) {
 			perror("Error\n");
 			exit(1);
 		}
-		if(pthread_create(&threads[i++], NULL, thread, arg{&mysocket, &consocket}) != 0)
+		if(pthread_create(&threads[i++], NULL, thread, arg{mysocket, &consocket}) != 0)
 			perror("Failed to create thread\n");
 	}
 
