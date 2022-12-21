@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -9,6 +10,8 @@
 
 #define MAXRCVLEN 500
 #define PORTNUM 2300
+#define _STRINGIFY(s) #s
+#define STRINGIFY(s) _STRINGIFY(s)
 
 int main(int argc, char *argv[]) {
 
@@ -53,8 +56,8 @@ int main(int argc, char *argv[]) {
 		printf("(Default = 1)> ");
 
 		scanf("%d", &choice);
-
-		send(*(int*)dest, choice, 1, 0);
+		sprintf(buffer, "%d", choice);
+		send(*(int*)dest, buffer, 1, 0);
 
 		if(choice == 1) {
 			len = recv(mysocket, buffer, MAXRCVLEN, 0);
@@ -65,7 +68,7 @@ int main(int argc, char *argv[]) {
 
 		}
 		else if(choice == 2) {
-			printf("Enter term of max size "MAXRCVLEN":");
+			printf("Enter term of max size "STRINGIFY(MAXRCVLEN)":");
 			scanf("%s", &buffer);
 			printf("Received string: %s", buffer);
 			send(*(int*)dest, buffer, strlen(buffer+1), 0);
