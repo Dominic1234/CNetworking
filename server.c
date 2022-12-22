@@ -26,7 +26,8 @@ typedef struct threadArgs {
 	void* size;	
 } arg;
 
-void* thread(arg* args) {
+void* thread(void* argstmp) {
+	arg* args = (arg*)argstmp;
 	char msg[MAXRCVLEN+1] = "\0";
 	printf("Writer entering\n");
 	// Lock semaphore
