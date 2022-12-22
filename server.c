@@ -114,8 +114,8 @@ int main(int argc, char *argv[]) {
 			perror("Error\n");
 			exit(1);
 		}
-		arg *argtmp = {mysocket, &consocket};
-		if(pthread_create(&threads[i++], NULL, thread, argtmp) != 0)
+		arg argtmp = {mysocket, &consocket};
+		if(pthread_create(&threads[i++], NULL, thread, &argtmp) != 0)
 			perror("Failed to create thread\n");
 	}
 
