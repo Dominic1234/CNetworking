@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
 		scanf("%d", &choice);
 		sprintf(buffer, "%d", choice);
-		send(*(int*)dest, buffer, 1, 0);
+		send(mysocket, buffer, sizeof(int), 0);
 
 		if(choice == 1) {
 			len = recv(mysocket, buffer, MAXRCVLEN, 0);
@@ -69,9 +69,9 @@ int main(int argc, char *argv[]) {
 		}
 		else if(choice == 2) {
 			printf("Enter term of max size "STRINGIFY(MAXRCVLEN)":");
-			scanf("%s", &buffer);
+			scanf("%s", buffer);
 			printf("Received string: %s", buffer);
-			send(*(int*)dest, buffer, strlen(buffer+1), 0);
+			send(mysocket, buffer, strlen(buffer)+1, 0);
 			printf("Message sent\n\n");
 
 		}

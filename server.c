@@ -42,17 +42,17 @@ void* thread(arg* args) {
 		choice = atoi(msg);
 
 		if(choice == 1) {
-			send(*(int*)attr->size, msg, strlen(msg)+1, 0);
+			send(*(int*)args->size, msg, strlen(msg)+1, 0);
 		}
 		else if(choice == 2) {
-			len = recv(attr->sock, &msg, MAXRCVLEN, 0);
+			len = recv(args->sock, &msg, MAXRCVLEN, 0);
 			printf("Message received: \"%s\" of size %d\n", msg, len);
 		}
 		else if(choice == 3) {
 			continue;
 		}
 		else {
-			perror("Error, invalid choice: %d\n", choice);
+			printf("Error, invalid choice: %d\n", choice);
 		}
 	}
 	// Unlock semaphore
@@ -114,7 +114,8 @@ int main(int argc, char *argv[]) {
 			perror("Error\n");
 			exit(1);
 		}
-		if(pthread_create(&threads[i++], NULL, thread, arg{mysocket, &consocket}) != 0)
+		arg *argtmp = {mysocket, &consocket};
+		if(pthread_create(&threads[i++], NULL, thread, argtmp) != 0)
 			perror("Failed to create thread\n");
 	}
 
