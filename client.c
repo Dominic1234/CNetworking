@@ -56,8 +56,7 @@ int main(int argc, char *argv[]) {
 		printf("(Default = 1)> ");
 
 		scanf("%d", &choice);
-		sprintf(buffer, "%d", choice);
-		send(mysocket, buffer, sizeof(int), 0);
+		send(mysocket, &choice, sizeof(int), 0);
 
 		if(choice == 1) {
 			len = recv(mysocket, buffer, MAXRCVLEN, 0);

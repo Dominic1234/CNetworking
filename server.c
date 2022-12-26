@@ -37,10 +37,9 @@ void* thread(void* argstmp) {
 	send(*(int*)args->size, welcome, strlen(msg)+1, 0);
 
 	//begin main code after inital handshake completed
-	int choice = 3, len;
+	int choice = 1, len;
 	while(choice != 3) {
-		len = recv(args->sock, &msg, sizeof(int), 0);
-		choice = atoi(msg);
+		len = recv(args->sock, &choice, sizeof(int), 0);
 
 		if(choice == 1) {
 			send(*(int*)args->size, msg, strlen(msg)+1, 0);
