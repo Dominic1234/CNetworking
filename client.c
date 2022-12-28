@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 			scanf("%s", buffer);
 			printf("Received string: %s", buffer);
 			send(mysocket, buffer, strlen(buffer)+1, 0);
-			printf("Message sent\n\n");
+			printf("\nMessage sent\n\n");
 
 		}
 		else if(choice  == 3) {

@@ -23,29 +23,31 @@ char* welcome = "Hello, World\n";
 
 typedef struct threadArgs {
 	int sock;
-	void* size;	
+	int* size;	
 } arg;
 
 void* thread(void* argstmp) {
 	arg* args = (arg*)argstmp;
+	int threadsock = args->sock;
+	int consize = *(args->size);	
 	char msg[MAXRCVLEN+1] = "\0";
 	printf("Writer entering\n");
 	// Lock semaphore
 	sem_wait(&y);
 	printf("Writer entered\n");
 	//send greeting
-	send(*(int*)args->size, welcome, strlen(welcome)+1, 0);
+	send(consize, welcome, strlen(welcome)+1, 0);
 
 	//begin main code after inital handshake completed
 	int choice = 1, len;
 	while(choice != 3) {
-		len = recv(args->sock, &choice, sizeof(int), 0);
+		len = recv(threadsock, &choice, sizeof(int), 0);
 		printf("Choice received: %d\n", choice);
 		if(choice == 1) {
-			send(*(int*)args->size, msg, strlen(msg)+1, 0);
+			send(consize, msg, strlen(msg)+1, 0);
 		}
 		else if(choice == 2) {
-			len = recv(args->sock, &msg, MAXRCVLEN, 0);
+			len = recv(threadsock, msg, MAXRCVLEN, 0);
 			printf("Message received: \"%s\" of size %d\n", msg, len);
 		}
 		else if(choice == 3) {
@@ -107,6 +109,7 @@ int main(int argc, char *argv[]) {
 
 		int consocket, i = 0;
 
+	arg argtmp = {mysocket, &consocket};
 	while(1) {
 		addr_size = sizeof(serverStorage);
 		consocket = accept(mysocket, (struct sockaddr *)&dest, &addr_size);
@@ -114,7 +117,6 @@ int main(int argc, char *argv[]) {
 			perror("Error\n");
 			exit(1);
 		}
-		arg argtmp = {mysocket, &consocket};
 		if(pthread_create(&threads[i++], NULL, thread, &argtmp) != 0)
 			perror("Failed to create thread\n");
 	}
