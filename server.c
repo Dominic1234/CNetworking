@@ -32,8 +32,6 @@ void* thread(void* argstmp) {
 	int consize = *(args->size);	
 	char msg[MAXRCVLEN+1] = "\0";
 	printf("Writer entering\n");
-	// Lock semaphore
-	sem_wait(&y);
 	printf("Writer entered\n");
 	//send greeting
 	send(consize, welcome, strlen(welcome)+1, 0);
@@ -41,13 +39,13 @@ void* thread(void* argstmp) {
 	//begin main code after inital handshake completed
 	int choice = 1, len;
 	while(choice != 3) {
-		len = recv(threadsock, &choice, sizeof(int), 0);
+		len = recv(consize, &choice, sizeof(int), 0);
 		printf("Choice received: %d\n", choice);
 		if(choice == 1) {
 			send(consize, msg, strlen(msg)+1, 0);
 		}
 		else if(choice == 2) {
-			len = recv(threadsock, msg, MAXRCVLEN, 0);
+			len = recv(consize, msg, MAXRCVLEN, 0);
 			printf("Message received: \"%s\" of size %d\n", msg, len);
 		}
 		else if(choice == 3) {
@@ -57,8 +55,6 @@ void* thread(void* argstmp) {
 			printf("Error, invalid choice: %d\n", choice);
 		}
 	}
-	// Unlock semaphore
-	sem_post(&y);
 	printf("Writer leaving\n");
 
 	return NULL;
