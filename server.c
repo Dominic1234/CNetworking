@@ -28,7 +28,6 @@ typedef struct threadArgs {
 
 void* thread(void* argstmp) {
 	arg* args = (arg*)argstmp;
-	int threadsock = args->sock;
 	int consize = *(args->size);	
 	char msg[MAXRCVLEN+1] = "\0";
 	printf("Writer entering\n");

@@ -16,6 +16,7 @@
 int main(int argc, char *argv[]) {
 
 	char buffer[MAXRCVLEN + 1];
+	char junk[2];
 	int len, mysocket, choice;
 	struct sockaddr_in dest;
 	
@@ -56,6 +57,7 @@ int main(int argc, char *argv[]) {
 		printf("(Default = 1)> ");
 
 		scanf("%d", &choice);
+		fgets(junk, MAXRCVLEN, stdin);	//Eliminating extra newline
 		send(mysocket, &choice, sizeof(int), 0);
 
 		if(choice == 1) {
@@ -68,7 +70,7 @@ int main(int argc, char *argv[]) {
 		}
 		else if(choice == 2) {
 			printf("Enter term of max size "STRINGIFY(MAXRCVLEN)":");
-			scanf("%s", buffer);
+			fgets(buffer, MAXRCVLEN, stdin);
 			printf("Received string: %s", buffer);
 			send(mysocket, buffer, strlen(buffer)+1, 0);
 			printf("\nMessage sent\n\n");
