@@ -1,6 +1,5 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -10,8 +9,6 @@
 
 #define MAXRCVLEN 500
 #define PORTNUM 2300
-#define _STRINGIFY(s) #s
-#define STRINGIFY(s) _STRINGIFY(s)
 
 int main(int argc, char *argv[]) {
 
@@ -54,10 +51,10 @@ int main(int argc, char *argv[]) {
 		printf("1. Write\n");
 		printf("2. Read\n");
 		printf("3. Exit\n");
-		printf("(Default = 1)> ");
+		printf("> ");
 
 		scanf("%d", &choice);
-		fgets(junk, MAXRCVLEN, stdin);	//Eliminating extra newline
+		fgets(junk, sizeof(junk), stdin);	//Eliminating extra newline
 		send(mysocket, &choice, sizeof(int), 0);
 
 		if(choice == 1) {
@@ -69,7 +66,7 @@ int main(int argc, char *argv[]) {
 
 		}
 		else if(choice == 2) {
-			printf("Enter term of max size "STRINGIFY(MAXRCVLEN)":");
+			printf("Enter term of max size %d: ", MAXRCVLEN);
 			fgets(buffer, MAXRCVLEN, stdin);
 			printf("Received string: %s", buffer);
 			send(mysocket, buffer, strlen(buffer)+1, 0);

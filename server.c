@@ -7,44 +7,39 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <pthread.h>
-#include <semaphore.h>
 
 #define MAXRCVLEN 500
 #define PORTNUM 2300
+#define MAXTHREADS 100
 
-// Semaphore variables
-sem_t x, y;
+//thread variables
 pthread_t tid;
-pthread_t threads[100];
-int count = 0;
+pthread_t threads[MAXTHREADS];
 
 // Global variables
-char* welcome = "Hello, World\n";
-
-typedef struct threadArgs {
-	int sock;
-	int* size;	
-} arg;
+const char* welcome = "Hello, World\n";
 
 void* thread(void* argstmp) {
-	arg* args = (arg*)argstmp;
-	int consize = *(args->size);	
+	int consock = *(int*)argstmp;
 	char msg[MAXRCVLEN+1] = "\0";
-	printf("Writer entering\n");
-	printf("Writer entered\n");
+	printf("Client connected\n");
 	//send greeting
-	send(consize, welcome, strlen(welcome)+1, 0);
+	send(consock, welcome, strlen(welcome)+1, 0);
 
 	//begin main code after inital handshake completed
 	int choice = 1, len;
 	while(choice != 3) {
-		len = recv(consize, &choice, sizeof(int), 0);
+		len = recv(consock, &choice, sizeof(int), 0);
+		if(len < 1) return NULL;
+
 		printf("Choice received: %d\n", choice);
 		if(choice == 1) {
-			send(consize, msg, strlen(msg)+1, 0);
+			send(consock, msg, strlen(msg)+1, 0);
 		}
 		else if(choice == 2) {
-			len = recv(consize, msg, MAXRCVLEN, 0);
+			len = recv(consock, msg, MAXRCVLEN, 0);
+			if(len < 1) return NULL;
+
 			printf("Message received: \"%s\" of size %d\n", msg, len);
 		}
 		else if(choice == 3) {
@@ -66,27 +61,25 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_storage serverStorage;
 
 	socklen_t addr_size;
-	sem_init(&x, 0, 1);
-	sem_init(&y, 0, 1);
 
-	int mysocket;					/* socket used to listen for incoming connections */
+	int listen_sock;					/* socket used to listen for incoming connections */
 	
 	memset(&serv, 0, sizeof(serv));			/* empty struct before filling fields */
 	serv.sin_family = AF_INET;			/* set connection type to TCP/IP */
 	serv.sin_addr.s_addr = htonl(INADDR_ANY);	/* set server address to any interface */
 	serv.sin_port = htons(PORTNUM);			/* set server port number */
 
-	mysocket = socket(AF_INET, SOCK_STREAM, 0);
+	listen_sock = socket(AF_INET, SOCK_STREAM, 0);
 
-	if(mysocket < 0) {
+	if(listen_sock < 0) {
 		perror("Error in connection\n");
 		exit(1);
 	}
 
 	printf("Server socket created\n");
 
-	/* bind server info to mysocket*/
-	int ret = bind(mysocket, (struct sockaddr *)&serv, sizeof(struct sockaddr));
+	/* bind server info to listen_sock*/
+	int ret = bind(listen_sock, (struct sockaddr *)&serv, sizeof(struct sockaddr));
 
 	if(ret < 0) {
 		perror("Ërror in binding\n");
@@ -94,7 +87,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* start listening, allowing a queue of 10 pending connection */
-	if(listen(mysocket, 10) == 0) {
+	if(listen(listen_sock, 10) == 0) {
 		printf("Listening...\n\n");
 	}
 	else {
@@ -104,18 +97,21 @@ int main(int argc, char *argv[]) {
 
 		int consocket, i = 0;
 
-	arg argtmp = {mysocket, &consocket};
 	while(1) {
 		addr_size = sizeof(serverStorage);
-		consocket = accept(mysocket, (struct sockaddr *)&dest, &addr_size);
+		consocket = accept(listen_sock, (struct sockaddr *)&dest, &addr_size);
 		if(consocket < 0) {
 			perror("Error\n");
 			exit(1);
 		}
-		if(pthread_create(&threads[i++], NULL, thread, &argtmp) != 0)
+		if(pthread_create(&threads[i++], NULL, thread, &consocket) != 0)
 			perror("Failed to create thread\n");
+		if(i >= 100) {
+			printf("maximum limit reached for clients\n");
+			break;
+		}
 	}
 
-	close(mysocket);
+	close(listen_sock);
 	return EXIT_SUCCESS;
 }
